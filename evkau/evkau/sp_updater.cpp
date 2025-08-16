@@ -138,15 +138,20 @@ inline stdwstring string2wstring(const stdstring str) {
 
 void split_wstring(const wchar_t* str, const wchar_t token, c_wstring_buffer& ctn)
 {
-	std::wstring temp(str);
-	std::wstring strtoken(1, token);
-	wchar_t *next_token = fl_null;
-	wchar_t* pch = wcstok_s((wchar_t*)temp.c_str(), strtoken.c_str(), &next_token);
-	while (pch != 0)
-	{
-		ctn.push_back(pch);
-		pch = wcstok_s(0, strtoken.c_str(), &next_token);
-	}
+        std::wstring temp(str);
+        std::wstring strtoken(1, token);
+        wchar_t *next_token = fl_null;
+
+        // wcstok_s modifies the input buffer. Casting away const from c_str()
+        // is undefined behaviour because the returned pointer may not be
+        // writable. Obtain a modifiable buffer from the std::wstring instead.
+        wchar_t* buffer = temp.empty() ? nullptr : &temp[0];
+        wchar_t* pch = buffer ? wcstok_s(buffer, strtoken.c_str(), &next_token) : nullptr;
+        while (pch != 0)
+        {
+                ctn.push_back(pch);
+                pch = wcstok_s(0, strtoken.c_str(), &next_token);
+        }
 }
 
 stdwstring exe_full_path()
