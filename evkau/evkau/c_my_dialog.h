@@ -4,7 +4,7 @@
 #include <WinBase.h>
 #include <Windows.h>
 
-#define DETROY_WINDOW(hwnd) {if(hwnd){DestroyWindow(hwnd); hwnd=NULL;}}
+#define DESTROY_WINDOW(hwnd) {if(hwnd){DestroyWindow(hwnd); hwnd=NULL;}}
 
 LRESULT CALLBACK gl_dialog_proc(wnd_hwnd hwnd, wnd_uint mess_id, wnd_wparam wpram, wnd_lparam lparam);
 
@@ -27,4 +27,5 @@ protected:
 	wnd_hinstance m_hinst;
 	wnd_uint		m_id;
 	wnd_hwnd m_wnd_parent;
+
 };
