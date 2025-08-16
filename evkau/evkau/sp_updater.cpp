@@ -138,19 +138,21 @@ inline stdwstring string2wstring(const stdstring str) {
 
 void split_wstring(const wchar_t* str, const wchar_t token, c_wstring_buffer& ctn)
 {
+        if (!str || *str == L'\0')
+                return;
+
         std::wstring temp(str);
         std::wstring strtoken(1, token);
         wchar_t *next_token = fl_null;
 
-        // wcstok_s modifies the input buffer. Casting away const from c_str()
-        // is undefined behaviour because the returned pointer may not be
-        // writable. Obtain a modifiable buffer from the std::wstring instead.
-        wchar_t* buffer = temp.empty() ? nullptr : &temp[0];
-        wchar_t* pch = buffer ? wcstok_s(buffer, strtoken.c_str(), &next_token) : nullptr;
-        while (pch != 0)
+        // Use a mutable copy to preserve 'temp' and avoid casting away const.
+        std::wstring mutable_copy = temp;
+        wchar_t* buffer = &mutable_copy[0];
+        wchar_t* pch = wcstok_s(buffer, strtoken.c_str(), &next_token);
+        while (pch != nullptr)
         {
                 ctn.push_back(pch);
-                pch = wcstok_s(0, strtoken.c_str(), &next_token);
+                pch = wcstok_s(nullptr, strtoken.c_str(), &next_token);
         }
 }
 
